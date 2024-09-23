@@ -1,0 +1,389 @@
+point-01# https://github.com/cprakash2118/nokia-23sept24-do280
+
+Login to Red Hat Online Learning Platform (ROL).
+https://rol.redhat.com [ Use Red Hat Login ID ]
+ - Download eBook(pdf) 
+ - Access LAB environment.
+   FYI- Access "workstation" node via console [Click on "OPEN CONSOLE"]
+ - Classroom Environment.
+   a) Users Details.
+      Login to VMs - student/student ; root/redhat [student having sudo access]
+	  Login to OCP cluster 
+	   - admin/redhatocp ; developer/developer 
+	   - API URL - https://api.ocp4.example.com:6443 
+	   Eg:
+	   Open Terminal on your workstation, login as student.
+	   $ whoami
+	   student 
+	   $ hostname -s 
+	   workstation
+	   $ hostname -d 
+	   lab.example.com 
+	   $ hostname -f 
+	   workstation.lab.example.com 
+	   
+	   $ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443 
+	   $ oc version 
+	   $ oc get nodes 
+	   
+	   
+	   Windows 
+	   - Press togather "Ctrl , Shift , +"   - adject fount size 
+	   - Press "Ctrl , -" keys reduce the size 
+
+point-02#
+Product Name - Red Hat OpenShift 
+Training Module - DO180/280 - Admin (I,II).
+
+Product Reference - https://www.redhat.com/en/technologies/cloud-computing/openshift
+
+1) Cloud services editions
+ - Red Hat OpenShift Service on AWS (AWS)
+ - Microsoft Azure Red Hat OpenShift (Azure)
+ - Red Hat OpenShift Dedicated (AWS/GCP)
+ - Red Hat OpenShift on IBM Cloud (IBM)
+
+2) Self-managed editions
+ - Red Hat OpenShift Kubernetes Engine
+ - Red Hat OpenShift Container Platform (RHOCPv414)
+ - Red Hat OpenShift Platform Plus
+
+  FYI- OpenShift VS Kubernetes
+
+3) Services & add-ons
+ - Red Hat OpenShift AI
+ - Red Hat OpenShift Virtualization (kubeVirt)
+ - Red Hat Quay
+ - Red Hat Advanced Cluster Management for Kubernetes
+ - Red Hat Advanced Cluster Security for Kubernetes
+ - Red Hat 3scale API Management
+ - Red Hat OpenShift Consulting
+ 
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.14
+
+ - OpenShift anywhere [Public-Private Cloud ; Bare Metal ; Virtualization].
+
+Classroom environment:-
+   - Users Detail:-
+      Login to VMs - student/student ; root/redhat [student having sudo access]
+	  Login to OCP cluster 
+	   - admin/redhatocp ; developer/developer 
+	   - API URL - https://api.ocp4.example.com:6443 
+	   Eg:
+	   Open Terminal on your workstation, login as student.
+	   $ oc login -u userName -p passWord API_URL 
+	   Eg:
+	   $ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443 
+	   
+	   What is API URL ?
+	   https://api.ocp4.example.com:6443 
+	   
+	   OCP cluster 
+	   Base Domain  - example.com 
+	   Cluster Name - ocp4 
+	   
+	   API URL - https://api.ocp4.example.com:6443 
+	   
+	   Eample:-
+	   
+	   OCP cluster 
+	   Base Domain  - nokia.com 
+	   cluster Name - ocp4-apac 
+       API URL - https://api.ocp4-apac.nokia.com:6443 	   
+	   Web COnsole - https://appName-namespace.apps.clusterName.BaseDomain
+                   - https://console-openshift-console.apps.ocp4.example.com 	   
+	   
+	   OCP cluster 
+	   Base Domain  - nokia.com 
+	   cluster Name - ocp4-emea
+	   API URL - https://api.ocp4-emea.nokia.com:6443 
+	   
+	   OCP cluster 
+	   Base Domain  - nokia.com 
+	   cluster Name - ocp4-na
+	   API URL - https://api.ocp4-na.nokia.com:6443 
+	   
+	   
+	Domain/Network & VMs/Servers as per Classroom.
+	
+	Domain 
+	 - lab.example.com   172.25.250.0/24   - Student N/w 
+     - ocp4.example.com  192.168.50.0/24   - Cluster N/w 
+	
+	workstation.lab.example.com 
+	utility.lab.example.com 
+    bastion.lab.example.com 
+    classroom.lab.example.com 
+
+    master01.ocp4.example.com [Single node cluster]
+    registry.ocp4.example.com [git.ocp4.example.com/helm.ocp4.example.com etc]
+    idm.ocp4.example.com [LDAP server]	
+	   
+	As per Production Standards:-
+	master01.ocp4.example.com 
+	master02.ocp4.example.com
+	master03.ocp4.example.com
+	
+	worker01.ocp4.example.com
+	worker02.ocp4.example.com
+	worker0N.ocp4.example.com 
+	
+	Red Hat OpenShift CLuster (OCP cluster] or kubernetes cluster
+	- master/control plan node - Where OpenShift/Kubernetes services running 
+	- worker/compute node      - Where (majorly) end user application running.
+	
+
+  Kubernetes Vs OpenShift (Production Kubernetes). 
+  
+ Kubernetes Part:-
+  https://kubernetes.io/
+  https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+  https://kubernetes.io/docs/setup/production-environment/container-runtimes/
+  
+  
+  Layer-6  End user application/DB.
+  Layer-5  Kubernetes add-on services [network/auth/metalLB etc]
+  Layer-4  Certified Kubernetes installation - [Container Orchestration tool]
+           [ kubelet; etcd ; kube-api ; kube-controller-manager ; kube-scheduler ]
+  Layer-3  Container RUN time [crio/containerd/docker/rocket etc]
+           [crio - systemd service]
+  Layer-2  INstall OS (Server level) - RHEL/SUSE/etc - Enterprise Linux 
+  Layer-1  Hardware/Cloud/VMs 
+  
+  
+  OpenShift (Production Kubernetes) part:-
+  
+  
+  Layer-8  End User application 
+  Layer-7  Red Hat OpenShift Container Plus      [Plus]
+  Layer-6  Red Hat OpenShift Container Platform  [ Default]
+  Layer-5  Red Hat OpenShift Kubernetes Engine   [Basic level] 
+  Layer-4  Certified Kubernetes 
+           [ kubelet; etcd ; kube-api ; kube-controller-manager ; kube-scheduler ]
+  Layer-3  Container RUN time [crio]
+           [crio - systemd service]
+  Layer-2  INstall RHEL coreOS - [Enterprise level] 
+  Layer-1  Hardware/Cloud
+  
+  Red Hat Enterprise Linux core OS (RHEL coreOS) version is OpenShift version.
+  
+  
+  LAB-01:#
+  $ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443 
+  $ oc whoami 
+  $ oc version 
+  $ oc get clusterversion 
+  $ oc get nodes 
+  $ oc debug node/master01 
+  #chroot /host
+  # hostname -f 
+  # cat /etc/redhat-release 
+  # systemctl status crio.service 
+  # systemctl status kubelet.service
+  # crictl ps | grep etcd   
+  # crictl ps | grep kube-apiserver 
+  # crictl ps | grep kube-controller-manager
+  # crictl ps | grep kube-scheduler
+  # exit 
+  $ hostname -f 
+
+###############################
+Unit-01#Declarative Resource Management
+- Resource Manifests.
+- Kustomize Overlays.
+
+- Resource Manifests.
+Deploy and update applications from resource manifests that are stored as YAML files.
+
+- OpenShift/Kubernetes resources.
+  1- pod 
+  2- service (svc)
+  3- route 
+  4- deployment 
+  5- replicaset 
+  -----------------------
+  6- deploymentConfig 
+  7- replicationcontroller
+  -----------------------  
+  8- statefulset 
+  9- daemonSet 
+  10- secret 
+  11- configmap 
+  12- pv
+  13- pvc 
+  14- namespace (project).
+  etc 
+
+Imperative Versus Declarative Workflows
+Eg: Deploy application:-
+ 
+Imperative Workflows:-
+$ oc new-project demo01 
+$ oc project -q 
+$ oc get all 
+
+$ oc new-app --name app01 httpd:2.4 
+- POD 
+- service 
+- replicaset 
+- deployment 
+$ oc get pods 
+$ oc get service 
+$ oc get replicaset 
+$ oc get deployment 
+
+$ oc expose service serviceName 
+$ oc get route 
+- route 
+
+----------------
+$ kubectl create deployment db-pod --port 3306 --image registry.ocp4.example.com:8443/rhel8/mysql-80
+
+$ kubectl set env deployment/db-pod MYSQL_USER='user1'  MYSQL_PASSWORD='mypa55w0rd'  MYSQL_DATABASE='items'
+----------------
+
+
+Declarative Workflows:-
+
+---
+vim pod.yaml 
+apiVersion: v1 
+kind: Pod 
+metadata:
+   name: pod-name 
+   labels:
+      app: myapp 
+spec:
+
+----
+vim replicaset.yaml 
+apiVersion: apps/v1 
+kind: Pod 
+metadata:
+   name: pod-name 
+   #namespace: demo01 
+spec:
+ selector:
+   matchLabels:
+     app: myapp 
+ replicas:
+ template:
+
+# https://github.com/cprakash2118/kubernetes-projects
+# https://github.com/cprakash2118/DO280-hpe
+
+
+- Creating Kubernetes Manifests:- 
+kubectl create deployment hello-openshift -o yaml --image registry.ocp4.example.com:8443/redhattraining/hello-world-nginx:v1.0 --save-config --dry-run=client > example-deployment.yaml
+
+- YAML Validation:-
+kubectl apply -f example-deployment.yaml --dry-run=server --validate=true
+
+
+
+- Kustomize Overlays (Kustomization & Overlays).
+  Kustomize File Structure
+  Base:-
+
+base
+├── configmap.yaml
+├── deployment.yaml
+├── secret.yaml
+├── service.yaml
+├── route.yaml
+└── kustomization.yaml
+
+cat kustomization.yaml
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- configmap.yaml
+- deployment.yaml
+- secret.yaml
+- service.yaml
+- route.yaml
+
+- Kustomize Generators
+  Configuration Map Generator
+  Secret Generator
+  
+########################################
+Authentication and Authorization:-
+- Configure Identity Providers 
+- Define and Apply Permissions with RBAC.
+
+
+Configure Identity Providers:-
+- users, identity, groups, serviceaccount, role [ rule -> role -> binding ]
+
+Login to OCP cluster via
+- TOken based auth (oauth Service)
+$ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443 
+$ oc whoami -t 
+$ oc logout 
+
+
+- Certificate based auth - X.509 client certificates
+  via kubeconfig 
+  
+# Create user1-5/redhat and login to OCP cluster via Oauth service (Token based auth).
+
+Step-1
+htpasswd -c -b -B anyfile.txt user1 redhat
+htpasswd    -b -B anyfile.txt user1 redhat  
+
+Step-2 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
