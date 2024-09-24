@@ -1,0 +1,191 @@
+#Quick Recap - Day-01 
+- Login to ROL - https://rol.redhat.com [Downloaded eBook, Access Labs]
+- Login to Classroom Env - [Login to Workstation via student/student]
+- Login to Red Hat OpenShift (OCP) Cluster.
+  user = admin/developer/kubeadmin 
+  API URL = https://api.ocp4.example.com:6443 
+  BaseDOmain = example.com 
+  Cluster Name = ocp4 
+  Web COnsole = https://console-openshift-console-apps.ocp4.example.com
+  
+- utility.lab.example.com [ssh root@utility ; location - /home/lab/ocp4/ & /home/lab/ocp4/auth]
+  /home/lab/ocp4/auth - "kubeconfig & kubeadmin-password"
+
+Unit-1#Declarative Resource Management
+  - Resource Manifest (All kubenetes/OpenShift resources express in yaml).
+  - Imperative Versus Declarative Workflows
+    - GitOps (deploy application via resources manifest with Git OPerations).
+    - Imperative Workflow
+      $  kubectl create deployment db-pod --port 3306 --image registry.ocp4.example.com:8443/rhel8/mysql-80 
+      $ kubectl get deployment 
+      $ oc get pods 
+
+    - kubectl set env deployment/db-pod MYSQL_USER='user1' MYSQL_PASSWORD='mypa55w0rd' MYSQL_DATABASE='items'	  
+	
+    - Declarative Workflows
+	  Creating Kubernetes Manifests:-
+	  
+	  $ oc create deployment hello-openshift -o yaml --image registry.ocp4.example.com:8443/redhattraining/hello-world-nginx:v1.0 --save-config --dry-run=client  > example-deployment.yaml
+	  
+	- YAML Validation
+      $ oc apply -f example-deployment.yaml --dry-run=server --validate=true
+	  
+	- oc apply  -f 
+	- oc create -f 
+	- oc diff -f 
+	
+
+  - Kustomize Overlays
+    Kustomize File Structure
+	  - Base 
+	  - Overlays 
+	      - prod 
+		  - dev 
+		  - custom 
+	  - kustomization.yaml [Defined workflow for all mentioned resources manifest]
+
+base
+├── configmap.yaml
+├── deployment.yaml
+├── secret.yaml
+├── service.yaml
+├── route.yaml
+└── kustomization.yaml
+
+vim kustomization.yaml 
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- configmap.yaml
+- deployment.yaml
+- secret.yaml
+- service.yaml
+- route.yaml
+
+
+- Overlays workflow:-
+
+base
+├── configmap.yaml
+├── deployment.yaml
+├── secret.yaml
+├── service.yaml
+├── route.yaml
+└── kustomization.yaml
+overlay
+└── development
+ └── kustomization.yaml
+└── testing
+ └── kustomization.yaml
+└── production
+ ├── kustomization.yaml
+ └── patch.yaml
+ 
+vim overlay/production/kustomization.yaml 
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: production
+patches: 
+- patch: |-
+ - op: replace 
+   path: /metadata/name
+   value: frontend-test
+  target: 
+   kind: Deployment
+   name: frontend
+
+- patch: |- 
+ - op: replace
+ path: /spec/replicas
+  value: 15
+ target:
+  kind: Deployment
+  name: frontend
+
+resources: 
+- ../../base
+commonLabels: 
+ env: test
+
+Kustomize Generators
+ - secret [file, variable , variable-files]
+ - configmap [file, variable , variable-files]
+
+####
+Unit-3# Authentication and Authorization
+- Configure Identity Providers 
+- Define and Apply Permissions with RBAC
+
+
+# Login to OCP cluster 
+Token based via Oauth service.
+
+Task-01:- 10 Users w.r.t OCP cluster. 
+- user31-40 with password redhat 
+- file01-upload.txt [user31-35], secretName=secret-file01, idp=idp-htpasswd-file01 
+- file02-upload.txt [user36-40], secretName=secret-file02, idp=idp-htpasswd-file02
+- Verify access for each user.
+
+Task-02:- Create 2 groups 
+Group-1 - infra_team [user31-35] 
+Group-2 - app_team  [user36-40] 
+
+Task-03:- Create namespace/project
+ProjectName = ns-infra-project - infra_team (cluster-admin)
+ProjectName = ns-app-project - [user36=admin; user37=edit, user38=view , user39=view ; user40=admin]
+              FYI- admin w.r.t namespace [ns=ns-app-project]
+			  
+
+Task-04:
+- ONly user37 - will be able to create project 
+- infra_team - cluster-admin access 
+- user10 - cluster-admin access 
+
+
+Oauth -> openshift-apiserver -> openshift-kube-apiserver -> etcd <- openshift-kube-controller & openshift-scheduler 
+
+###########
+Unit-1 
+- Resource Manifest
+- Kustomization & Overlays
+
+Unit-3 
+- Authentication (idp=htpasswd, LDAP, oauth,openshift-apiserver, kube-apiserver, etcd) 
+- Authorization (RBAC - rule, role, binding w.r.t Cluster & Namespace/local/project).
+
+Unit-2 Deploy Packaged Applications
+- OPenShift Template 
+- Helm Chart 
+
+Kubernetes/OPenShift resources :-
+pod, svc, replicaset, deployment etc ... template 
+
+kind: Template
+
+- Helm Charts:- 
+
+1-Install Helm on CentOS 9, Download the Helm binary:
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+
+2- Run the Helm installation script:
+chmod 700 get_helm.sh
+./get_helm.sh
+
+Verify the Helm installation:
+helm version
+
+3- Add the MetalLB Helm Repository
+Add the MetalLB Helm repository:
+helm repo add metallb https://metallb.github.io/metallb
+
+4- Update your Helm repositories:
+helm repo update
+
+5- Install MetalLB using Helm- Create a namespace for MetalLB
+kubectl create namespace metallb-system
+
+6- Install MetalLB:
+helm install metallb metallb/metallb --namespace metallb-system
+
