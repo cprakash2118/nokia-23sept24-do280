@@ -1,0 +1,247 @@
+Unit -1# Declarative Resource Management
+ - Resource Manifest 
+ - Kustomization & Overlay 
+ 
+Unit -2# Deplying packaged applications.
+ - OpenShift Template 
+ - Helm Chart 
+ 
+Unit -3# Authentication & AUthorization.
+ - Setup IDP - htpasswd 
+ - Role Based Access COntrol (RBAC) 
+   RBAC w.r.t Cluster/Local-project (namespace).
+
+Unit -4# Network Security:-
+ - Secure route (http/https-Edge/Passthrough/re-encryption).
+ - Network Policy (w.r.t namespace)
+ - Secure internal traffic (encryption within the OCP cluster).
+ 
+ Key -
+  public key-key.crt  (used to encryp) - Certificate.
+  private key (used to decrypt)
+  
+  
+  Eg: 
+  
+  External - WB (Web Browser) -> banking-service (Deployed on OCP cluster).
+  Route - edge/passthrough/re-encryption
+  https://URL 
+  
+  - WB used certified to encryp and key on the server will used for decrypt.
+  - key (Private key) on the server (secret - Type=TLS)
+   
+	
+  INternal - service to service encrypted communication.
+   
+   service-client ["no-ca-buldle" running & later "client" pod]
+   service-server [Already this is initited - but pod in error mode]
+    FYI- Public/Certificate - use configmap to inject to client side 
+    
+	$ oc log podname 
+	Waiting for certificate to be added on specific location (as per application).
+	
+	- annotate service (secret - carry crt.crt & key.key) In the same namespace.
+	- Inject this to server (service-server) w.r.t location.
+	- Inject ca-buldle to client 
+	
+	
+	
+	
+Unit 5- Expose non-HTTP/SNI Applications
+- Load Balancer Services 
+- Multus Secondary Networks 
+
+
+- Load Balancer Services 
+app01 -> pod via deployment/rs 
+
+service [ Default CLusterIP , LoadBalancer , NodePort ]
+- CLusterIP - expose -> route (http/https).
+- CLusterIP - with "CLusterIP: None" -> Headless clusterIP service w.r.t "statefulSet"
+
+oc expose deployment/deploymentName  --type=LoadBalancer --target-port=8554
+
+service will be created, type of service - LB
+metalLB will provide IP range to your LB [metalLB only w.r.t bare metal or virtulization layer ]
+
+Protocol -> ip:8554
+
+
+
+- Multus Secondary Networks
+
+- Multus is an Open source CNI plugin for Kubernetes/OpenShift that enable attacting multiple network inface to "PODs"
+
+
+kind: NetworkAttachmentDefinition
+
+
+
+
+kind: Deployment 
+
+
+Container part 
+
+annotations:
+ k8s.v1.cni.cncf.io/networks: example
+
+example - network Name 
+
+#######################
+Unit-6# Enable Developer Self-Service
+
+Quota - kind: ResourceQuota 
+Limit - kind: LimitRange 
+
+
+Quota - ResourceQuota:-
+  w.r.t Compute [CPU, Memory, Storage].
+  w.r.t Object (eg: kind: Pod)
+  
+  
+  Deploy application -> pod (associated resources - svc, rs, deployment, route, pvc,pv,secret etc).
+  
+  Pod Placement:-
+  1) Kubernetes/OpenShift refer - CPU, Memory, Less disk Pressure, More ports avl, taint-torelation, labels-selector etc)
+  
+  app01 - AI based app (nodeSelector:
+                              cpuType: gpu)
+  app02 - Normal (UI) 
+  oc lab node worker21-25.ocp4-c1.nokia.com cpuType=gpu 
+  
+  2) afinity/anti-afinity
+  
+     app01 -> replicas=10 
+
+  3) 89 34 45 70 87 90
+  
+  
+  app01 -> pod ;  [namespace=demo01]
+  
+  CPU:
+   Request: 250m 
+   Limits: 500m 
+  
+  CPU-
+  1 core = 1000m 
+  1Gi = 1024Mi [1G = 1000M]
+  
+  
+- The Project Template and the Self-Provisioner Role.
+
+kind: Template 
+
+kind: namespace [oc new-project projectname or oc create namespace ns-name ]
+
+
+
+#########################
+Unit -7# Manage Kubernetes Operators
+
+- Web COnsole 
+- Via CLI 
+
+Unit -8# Application Security
+- Control Application Permissions with Security Context Constraints 
+- Allow Application Access to Kubernetes APIs 
+- Cluster and Node Maintenance with Kubernetes Cron Jobs 
+
+
+oc create sa app-sa 
+oc get deploy/gitlab -o yaml | oc adm policy scc-subject-review -f -
+
+oc adm policy add-scc-to-user anyuid -z app-sa 
+
+oc set sa deployment deploymentName app-sa  
+
+
+
+Cron Jobs:-
+
+job
+oc create job --dry-run=client -o yaml test --image=registry.access.redhat.com/ubi8/ubi:8.6 -- curl https://example.com > myjob.yaml
+
+
+oc create cronjob job-name --image registry.access.redhat.com/ubi8/ubi:8.6 --schedule="5 4 * * *" --dry-run=client -o yaml > mycronjob.yaml 
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+   
+   
+   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
