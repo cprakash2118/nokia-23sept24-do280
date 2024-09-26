@@ -1,0 +1,204 @@
+# Quick Recap (10-15mins).
+Unit-1# Declarative Resource Management
+  - Resource Manifest (Kubernetes/OpenShift resources express in yaml/json).
+    - [pod,svc,rs,deployment,route,secret,cm,namespace etc]
+	- Create resources manifest [--dry-run=client -o yaml > file.yaml]
+	- Validation of resources manifest [--dry-run=server --validation=true]
+	- Operations w.r.t resources manifest - oc apply/create/delete/diff 
+	- Git Operations (GitOps - resources manifest w.r.t Version Control System - gitlab).
+	- oc apply/create/delete/diff -f (-f mean resources manifest file).
+	
+  - Kustomization & Overlay.
+    - base structure [resources manifest + kustomization.yaml]
+	- overlay & w.r.t base 
+	- deployment via kustomization 
+	- cc apply/create/delete/diff -k (-k mean kustomization).
+	- Kustomization Generators 
+	  - secret [data - file/variable/variable_files]
+	  - configmap  [data - file/variable/variable_files].
+      - Git Operations (GitOps - resources manifest w.r.t Version Control System - gitlab).
+      FYI - More organized deployment w.r.t resources manifest.
+
+
+Unit-3# Deploying packaged application.
+ - OpenShift Template 
+ - Helm Chart 
+ - Labs w.r.t Operations.
+ 
+
+Unit-3# Authentication (Oauth) & AUthorization (RBAC)
+  - IDP - htpasswd, LDAP [OpenID Connect (OIDC), etc]
+  - Setup IDP [htpasswd , LDAP already setup)]
+  - Operations adding/deleting/updating users w.r.t htpasswd.
+  - Authentication Workflow [Oauth -> OpenShift-apiserver -> Kube-apiserver -> etcd]
+  - htpasswd, secret, oauth manifest files/resources and enable authentication.
+  - Groups creation/adding/deletion 
+  - Role Based Access Control (RBAC)
+    [rule, role, binding]
+    rolebinding/clusterrolebindings - w.r.t Local/Project/namespace & Cluster.
+    oc adm policy 
+    oc policy 
+  - Default roles - cluster-admin, cluster-status, admin, view, edit, self-provisioner , basic-user.
+	
+
+
+
+Unit-04# Network Security:-
+- Network
+- Route (Secure - https - Edge/Passthrough/Reencryption).
+- NetworkPolicy 
+- INternal communication must be encrypted.
+
+
+###############
+RHOCP - Default 3 type of LB.
+- internal LB [Used inbuild kernel feature - netfilter ] 
+- External LB 
+- HAproxy LB (Route)
+
+
+
+Route - http or https
+- route - http (Access application from outside OCP cluster), and forward request to service(svc).
+- Servie (svc) - Take request from route and forward request to POD (where app deployed).
+  Note: Server perform LB (internal LB)
+  
+LAB - 
+- Namespace=ns-unit04-network 
+  Deploying application - [oc new-app --name app01 httpd:2.4 ]
+   - pod (label)
+   - svc (selector)
+   - replicaset (selector)
+   - deployment (selector)
+   - route (expose service and create route).
+
+Eg:
+app01 -> pod01
+app01 -> pod02   <- service (svc-01)  <- Route <- WB   
+app01 -> pod-3
+
+
+
+#############
+utility.example.com.         	  IN      A     172.168.1.141
+; Temp Bootstrap Node
+blr2bootstrap01.ocp4.example.com.     IN      A     172.168.1.142
+
+; Control Plane Nodes
+blr2master01.ocp4.example.com.  IN A   172.168.1.143
+blr2master02.ocp4.example.com.  IN A   172.168.1.144
+blr2master03.ocp4.example.com.  IN A   172.168.1.145
+
+; Worker Nodes
+blr2worker01.ocp4.example.com.  IN A   172.168.1.146
+blr2worker02.ocp4.example.com.  IN A   172.168.1.147
+
+
+
+; OpenShift Internal - Load balancer
+api.ocp4.example.com.        IN    A    172.168.1.141  [External LB]
+api-int.ocp4.example.com.    IN    A    172.168.1.141  [Internal LB via NetFilter]
+*.apps.ocp4.example.com.     IN    A    172.168.1.141  [HAproxy]
+
+oc login -u user1 -p pass https://api.ocp4.example.com:6443
+
+Oauth01
+Oauth02   Oauth-svc (api-int.ocp4.example.com) -> route (api.ocp4.example.com:6443)
+Oauth03 
+
+Route - appName-nsName.apps.ocp4.example.com 
+                     *.apps.ocp4.example.com
+
+###################
+ bootstrap-node 
+ master
+ worker 
+ 
+ svc-node/utility [DNS,DHCP, HAproxy, Apache, NFS (Default SC- nfs-storage)] 
+ 
+ FYI - DNS w.r.t Nodes, Wide Card DNS 
+ 
+- Protect External Traffic with TLS (HAproxy)
+- Configure Network Policies  
+- Protect Internal Traffic with TLS 
+
+
+http://appName-nsName.apps.ocp4.example.com
+
+Route - http/https [ Edge, Passthrough, Re-encryption]
+
+#############
+Configure Network Policies:- 
+Eg:-
+nameSpace=network-policy
+application=hello -> pod-hello -> svc-hello -> route-hello   
+application=test  -> pod-test  -> svc-test  -> No required as of now 
+
+nameSpace=different-namespace 
+application=sample -> pod-sample -> svc-sample 
+
+
+Default - all are connected (in same or different-namespace)
+
+Case-01:-
+no connection to hello (DMZ zone).
+
+case-02:-
+only sample connect hello 
+
+case-03:-
+test also able to connect to hello 
+
+Case-04:-
+Connect from outside to hello 
+
+
+############
+Protect Internal Traffic with TLS:- 
+- Service Certificates (service-ca).
+
+
+
+Eg:
+app01 -> pod-01 -> svc-01 (key-private, crt-public) - service-ca 
+app02 -> pod-02 -> svc-02 
+
+
+1) 
+oc annotate service hello service.beta.openshift.io/serving-cert-secret-name=hello-secret
+secret created [on same namespace]
+secret type - TLS 
+
+
+spec:
+ template:
+  spec:
+   volumes:
+    - name: server-secret
+      secret:
+       defaultMode: 420
+       secretName: server-secret
+       items:
+        - key: tls.crt
+          path: server.crt
+        - key: tls.key
+          path: private/server.key
+    - myvol:
+      	
+   containers:
+    - name: server
+      volumeMounts:
+        - name: server-secret
+          mountPath: /etc/pki/nginx/
+
+
+
+
+  
+
+
+
+
+
+
+
